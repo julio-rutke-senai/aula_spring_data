@@ -30,6 +30,10 @@ public class UsuarioController {
         try {
             if(!Optional.ofNullable(cookieAutenticacao).isPresent())
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+            if(!usuarioService.validarToken(cookieAutenticacao))
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
             List<Usuario> usuarios = usuarioService.listarUsuarios();
             return ResponseEntity.ok(usuarios);
         } catch(Exception ex) {
@@ -94,9 +98,9 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<?> autenticar(@RequestBody LoginDTO loginDTO, HttpServletResponse response){
-        boolean autenticar = usuarioService.autenticar(loginDTO);
-        if(autenticar){
-            String token = usuarioService.generateUuidToken();
+        Optional<Usuario> autenticado = usuarioService.autenticar(loginDTO);
+        if(autenticado.isPresent()){
+            String token = usuarioService.generateUuidToken(autenticado.get());
             Cookie cookieAutenticacao = new Cookie("SESSION_ID", token);
             response.addCookie(cookieAutenticacao);
             return ResponseEntity.ok("Usuário Autenticado com sucesso!");

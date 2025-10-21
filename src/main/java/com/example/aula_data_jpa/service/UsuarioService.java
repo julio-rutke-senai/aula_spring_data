@@ -1,8 +1,6 @@
 package com.example.aula_data_jpa.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import com.example.aula_data_jpa.entity.Usuario;
 import com.example.aula_data_jpa.entity.dtos.AlterarUsuarioDTO;
@@ -16,7 +14,10 @@ public class UsuarioService {
 
     private UsuarioRepository usuarioRepository;
 
+    Map<String, Usuario> listaDeTokens;
+
     public UsuarioService(UsuarioRepository usuarioRepository) {
+        this.listaDeTokens = new HashMap<>();
         this.usuarioRepository = usuarioRepository;
     }
 
@@ -65,20 +66,27 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(username);
     }
 
-    public boolean autenticar(LoginDTO loginDTO) {
-        Optional<Usuario> email = usuarioRepository.findByEmail(loginDTO.getEmail());
-        if(email.isPresent()){
-            if(email.get().getSenha().equals(loginDTO.getSenha())){
-                return true;
+    public Optional<Usuario> autenticar(LoginDTO loginDTO) {
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(loginDTO.getEmail());
+        if(usuario.isPresent()){
+            if(usuario.get().getSenha().equals(loginDTO.getSenha())){
+                return usuario;
             }
         }
-        return false;
+        return Optional.empty();
     }
 
-    public String generateUuidToken() {
+    public String generateUuidToken(Usuario usuario) {
         UUID uuid = UUID.randomUUID();
         String uuidString = uuid.toString();
+        listaDeTokens.put(uuidString, usuario);
+
         return uuidString;
     }
 
+    public boolean validarToken(String cookieAutenticacao) {
+        if(listaDeTokens.containsKey(cookieAutenticacao))
+            return true;
+        return false;
+    }
 }
