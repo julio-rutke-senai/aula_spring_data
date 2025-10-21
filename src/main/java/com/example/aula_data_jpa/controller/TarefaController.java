@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.example.aula_data_jpa.entity.Tarefa;
 import com.example.aula_data_jpa.entity.dtos.CriarTarefaDTO;
 import com.example.aula_data_jpa.service.TarefaService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +42,7 @@ public class TarefaController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> criarTarefa(@RequestBody CriarTarefaDTO tarefa){
+    public ResponseEntity<?> criarTarefa(@RequestBody CriarTarefaDTO tarefa, HttpServletResponse response){
         try {
             Tarefa tarefaCriada = tarefaService.criarTarefa(tarefa);
             return ResponseEntity.ok(tarefaCriada);

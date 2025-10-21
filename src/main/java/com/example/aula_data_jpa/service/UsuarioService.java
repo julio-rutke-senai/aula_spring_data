@@ -2,10 +2,12 @@ package com.example.aula_data_jpa.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.example.aula_data_jpa.entity.Usuario;
 import com.example.aula_data_jpa.entity.dtos.AlterarUsuarioDTO;
 import com.example.aula_data_jpa.entity.dtos.AtualizarSenhaDTO;
+import com.example.aula_data_jpa.entity.dtos.LoginDTO;
 import com.example.aula_data_jpa.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +63,22 @@ public class UsuarioService {
 
     public Optional<Usuario> getUsuarioAutenticacao(String username) {
         return usuarioRepository.findByEmail(username);
+    }
+
+    public boolean autenticar(LoginDTO loginDTO) {
+        Optional<Usuario> email = usuarioRepository.findByEmail(loginDTO.getEmail());
+        if(email.isPresent()){
+            if(email.get().getSenha().equals(loginDTO.getSenha())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String generateUuidToken() {
+        UUID uuid = UUID.randomUUID();
+        String uuidString = uuid.toString();
+        return uuidString;
     }
 
 }
