@@ -7,18 +7,26 @@ import com.example.aula_data_jpa.entity.Usuario;
 import com.example.aula_data_jpa.entity.dtos.AlterarUsuarioDTO;
 import com.example.aula_data_jpa.entity.dtos.AtualizarSenhaDTO;
 import com.example.aula_data_jpa.repository.UsuarioRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioService {
 
     private UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario criarUsuario(Usuario usuario) {
+        String senha = usuario.getSenha();
+        String encode = passwordEncoder.encode(senha);
+
+        usuario.setSenha(encode);
         usuarioRepository.save(usuario);
         return usuario;
     }

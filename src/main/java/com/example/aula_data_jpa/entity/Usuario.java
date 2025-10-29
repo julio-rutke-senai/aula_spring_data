@@ -74,7 +74,7 @@ public class Usuario {
     }
 
     public String getPermissao() {
-        return permissao;
+        return "ROLE_"+permissao;
     }
 
     public void setPermissao(String permissao) {
